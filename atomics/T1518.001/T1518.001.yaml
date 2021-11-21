@@ -56,6 +56,26 @@ atomic_tests:
     command: |
       ps aux | egrep 'falcond|nessusd|cbagentd|td-agent|packetbeat|filebeat|auditbeat|osqueryd'
     name: sh
+- name: Security Software Discovery - systemctl (Linux)
+  description: |
+    Methods to identify Security Software on an endpoint
+    when sucessfully executed, command shell  is going to display AV/Security software it is running.
+  supported_platforms:
+  - linux
+  executor:
+    command: |
+      for I in falcond nessusd cbagentd td-agent packetbeat filebeat auditbeat osqueryd ; do systemctl status $I; done
+    name: bash
+- name: Security Software Discovery - selinux
+  description: |
+    get selinux enforcement state
+  supported_platforms:
+  - linux
+  executor:
+    command: |
+      getenforce
+      cat /sys/fs/selinux/enforce
+    name: sh
 - name: Security Software Discovery - Sysmon Service
   auto_generated_guid: fe613cf3-8009-4446-9a0f-bc78a15b66c9
   description: |
