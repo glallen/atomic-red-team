@@ -104,3 +104,56 @@ atomic_tests:
       grep -i "PASS" "#{output_file}"
     cleanup_command: |
       rm -f "#{output_file}"
+
+- name: Mimipenguin
+  description: |
+    runs mimipenguin to test gathering credentials from /proc, gnome, etc.
+  supported_platforms:
+    - linux
+
+  executor:
+    name: bash
+    elevation_required: true
+    command: |
+      cd /tmp/atomic-test/mimipenguin
+      # assuming 64bit. running the whole Makefile to build both 32/64 bit adds dependencies and breaks
+      gcc -Iinclude/ -D_FILE_OFFSET_BITS=64 -O3 -Wno-unused-result src/scanner.c src/users.c src/targets.c src/mimipenguin.c -o mimipenguin -lcrypt
+      ./mimipenguin
+      python3 mimipenguin.py
+      ./mimipenguin.sh
+    cleanup_command: |
+      rm -rf /tmp/atomic-test
+
+  dependencies:
+    # TODO gcc and python3
+    - description: Pulls a copy of mimipenguin
+      prereq_command: |
+        [ -d /tmp/atomic-test/mimipenguin ]
+      get_prereq_command: |
+        mkdir -p /tmp/atomic-test
+        cd /tmp/atomic-test
+        git clone https://github.com/huntergregal/mimipenguin.git
+
+- name: LaZange
+  description: |
+    runs LaZange to dump credentials
+  supported_platforms:
+    - linux
+
+  executor:
+    name: bash
+    command: |
+      cd /tmp/atomic-test/LaZagne
+      pip install -r requirements.txt
+      python3 ./Linux/laZagne.py all
+    cleanup_command: |
+      rm -rf /tmp/atomic-test
+  dependencies:
+    - description: Pulls a copy of mimipenguin
+      prereq_command: |
+        [ -d /tmp/atomic-test/LaZagne ] && (which pip3)
+      get_prereq_command: |
+        mkdir -p /tmp/atomic-test
+        cd /tmp/atomic-test
+        apt-get install -y python3-pip || yum install -y pip3
+        git clone https://github.com/AlessandroZ/LaZagne.git
