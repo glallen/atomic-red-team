@@ -1,18 +1,37 @@
 attack_technique: T1070.002
 display_name: 'Indicator Removal on Host: Clear Linux or Mac System Logs'
 atomic_tests:
-- name: rm -rf
+- name: rm -rf logs under /private/var on macos
   auto_generated_guid: 989cc1b1-3642-4260-a809-54f9dd559683
   description: |
     Delete system and audit logs
   supported_platforms:
   - macos
-  - linux
   executor:
     command: |
       sudo rm -rf /private/var/log/system.log*
       sudo rm -rf /private/var/audit/*
     name: sh
+    elevation_required: true
+- name: rm -rf logs under /var/log on linux
+  description: |
+    Delete system and audit logs
+  supported_platforms:
+    - linux
+  executor:
+    command: |
+      sudo rm -rf /var/log/{sys*,messages,?tmp}
+    name: bash
+    elevation_required: true
+- name: shred a log (without delete)
+  description: |
+    Delete system and audit logs
+  supported_platforms:
+    - linux
+  executor:
+    command: |
+      shred /var/log/auth.log
+    name: bash
     elevation_required: true
 - name: Overwrite Linux Mail Spool
   auto_generated_guid: 1602ff76-ed7f-4c94-b550-2f727b4782d4
@@ -44,3 +63,4 @@ atomic_tests:
     command: |
       echo 0> #{log_path}
     name: bash
+# TODO what about systemd-tmpfiles ? logrotate ?
